@@ -7,14 +7,17 @@ function renderCard({name, link}) {
 	const userCard = templateCard.querySelector('.places__item').cloneNode(true);
   //Переменная кнопки
   const trashButton =  userCard.querySelector('.card__delete-button');
-  //с
+  //слушатель кнопки удаления
   trashButton.addEventListener('click', deleteCard);
+  //подстановка значений из массива
   userCard.querySelector('.card__image').src =  link;
   userCard.querySelector('.card__title').textContent = name;
   listCards.prepend(userCard);
 }
+//функция удаление карточки
 function deleteCard() {
   let delCard = document.querySelector('.card');
   delCard.remove();
 }
+
 initialCards.forEach(renderCard);
