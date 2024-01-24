@@ -1,4 +1,4 @@
-export function renderCard({name, link}, temp, delButton, likeButton, zoomCard) {
+export function createCard({name, link}, temp, delButton, likeButton, zoomCard) {
 	const userCard = temp.querySelector('.places__item').cloneNode(true);
   //Переменная кнопки и слушатель кнопки удаления//
   const trashButton =  userCard.querySelector('.card__delete-button');
@@ -9,6 +9,7 @@ export function renderCard({name, link}, temp, delButton, likeButton, zoomCard) 
   // открытие картинки на весь экран//
   const cardImg = userCard.querySelector('.card__image');
 	const cardTitle = userCard.querySelector('.card__title');
+  
 	cardImg.addEventListener('click', () => {zoomCard({name, link})});
   //подстановка значений из массива
   cardImg.src =  link;
