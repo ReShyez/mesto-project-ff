@@ -64,7 +64,7 @@ function zoomImage({name, link}) {
 	showPopup(imgPopup);
 }
 
-function handleFormAddNewCard(evt) {
+function handleFormAddNewPlace(evt) {
   evt.preventDefault();
     const name = inputName.value;
     userName.textContent = name;
@@ -76,8 +76,8 @@ function handleFormAddNewCard(evt) {
 }
 
 function integrateName (iName, uName, iJob, uJob) {
-  iName.placeholder = uName.textContent;
-  iJob.placeholder = uJob.textContent;
+  iName.value = uName.textContent;
+  iJob.value = uJob.textContent;
 }
 
 //добавляем слушатель клика, для изменения контактов//
@@ -96,7 +96,7 @@ profileEditPopup.addEventListener('click', (evt) => {
 //закрытие по кнопке профиля //
 
 
-userForm.addEventListener('submit', handleFormAddNewCard); 
+userForm.addEventListener('submit', handleFormAddNewPlace); 
 
 
 //закрытие по клику формы//
