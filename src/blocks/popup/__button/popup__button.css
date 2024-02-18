@@ -19,6 +19,17 @@
   cursor: pointer;
 }
 
+.popup__button_off {
+  background: transparent;
+  border: 1px solid #C5C5C5; /* Добавляем границу, так как background-color: none; не имеет смысла */
+  color: #C5C5C5; /* Меняем цвет текста на серый */
+  pointer-events: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 @media screen and (max-width: 568px) {
   .popup__button {
     font-size: 14px;

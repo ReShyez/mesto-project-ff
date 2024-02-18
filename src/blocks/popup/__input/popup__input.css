@@ -14,9 +14,23 @@
   margin-bottom: 0;
 }
 
+.form__input-error {
+  color: #FF0000;
+  font-size: 0.8em;
+  opacity: 0;
+  transition: 0.5s;
+}
+.form__input-error_active {
+  opacity: 1;
+}
+.form__input_err {
+  border-bottom-color: #FF0000;
+}
+
 @media screen and (max-width: 568px) {
   .popup__title {
     font-size: 12px;
     line-height: 15px;
   }
 }
+
