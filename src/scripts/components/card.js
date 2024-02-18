@@ -1,4 +1,3 @@
-import {userId} from '../index.js';
 import {deletedCard} from './api.js';
 export function createCard(
 	{_id, name, link, owner, likes },
@@ -16,12 +15,12 @@ export function createCard(
 	const likeCounter = userCard.querySelector('.card__like_counter');
 
 	cardImg.src =  link;
-	cardTitle.alt =  `На этой карточке ${name}`;
+	cardImg.alt =  `На этой карточке ${name}`;
 	cardTitle.textContent = name;
 	likeCounter.textContent = likes.length;
-	const isLikes = likes.some((user) => user._id === userId);
+	const isLiked = likes.some((user) => user._id === currentUserId);
 
-	if (isLikes) {
+	if (isLiked) {
 			cardLikeButton.classList.add('card__like-button_is-active');
 		}
 	if (owner._id === currentUserId) {

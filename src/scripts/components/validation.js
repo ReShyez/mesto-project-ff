@@ -39,8 +39,10 @@ const hasInvalidInput = (inputList) => {
 const toggleButtonState = (inputList, buttonElement, params) => {
 	if(hasInvalidInput(inputList)) {
 		buttonElement.classList.add(params.inactiveButtonClass);
+		buttonElement.setAttribute("disabled", "disabled");
 	} else {
 		buttonElement.classList.remove(params.inactiveButtonClass);
+		buttonElement.removeAttribute("disabled", "disabled");
 	}
 };
 
@@ -75,5 +77,6 @@ export const clearValidation = (profileForm, params) => {
 		hideInputError(profileForm, inputElement, params);
 	});
 	buttonElement.classList.add(params.inactiveButtonClass);
+	buttonElement.setAttribute("disabled", "disabled");
 };
 

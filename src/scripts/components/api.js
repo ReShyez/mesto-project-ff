@@ -16,10 +16,7 @@ function request(endpoint, method, body) {
 		headers: config.headers,
 		body: JSON.stringify(body)
 	})
-	.then(checkResp)
-	.catch((err) => {
-		console.error("Ошибка при выполнении запроса:", err);
-	});
+	.then(checkResp);
 }
 
 function checkResp(res) {
@@ -29,6 +26,12 @@ function checkResp(res) {
 	return res.json();
 }
 
+function getUserInfo() {
+	return request(`users/me`, 'GET');
+}
+function getCards() {
+	return request(`cards`, 'GET');
+}
 //Обновление данных польззователя//
 function updateProfileInform(name, about) {
 	return request('users/me', "PATCH", {name:name, about:about});
@@ -57,8 +60,8 @@ function likeCard(cardId, likeButton) {
 export {
 	token,
 	cohortId,
-	request,
-	checkResp,
+	getUserInfo,
+	getCards,
 	updateProfileInform,
 	updateProfilePhoto,
 	pushNewCard,

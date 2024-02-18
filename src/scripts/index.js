@@ -3,20 +3,15 @@ import "../pages/index.css";
 import {initialCards} from './components/cards.js';
 import {createCard, deleteCard} from './components/card.js';
 import {
-  token,
-  cohortId,
-  request,
-  checkResp,
+	getUserInfo,
+	getCards,
 	updateProfileInform,
-  updateProfilePhoto,
-  pushNewCard,
-  deletedCard,
-  likeCard
+	updateProfilePhoto,
+	pushNewCard,
+	likeCard
 } from './components/api.js';
 import {showPopup, closePopup} from './components/modal.js';
-import {enableValidation, clearValidation} from './components/validationPopup.js';
-
-const isClosedPopup = (evt) => (evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close'));
+import {enableValidation, clearValidation} from './components/validation.js';
 
 const placeList = document.querySelector('.places__list');
 const templateCard = document.querySelector('#card-template').content;
@@ -34,6 +29,7 @@ const userJob = document.querySelector('.profile__description');
 const imgPopup = document.querySelector('.popup_type_image');
 const popupImg = imgPopup.querySelector('.popup__image');
 const popupTitle = imgPopup.querySelector('.popup__caption');
+const popups = document.querySelectorAll('.popup');
 //Константы попапа добавления карточки//
 const popupAddCard = document.querySelector('.popup_type_new-card');
 const formAddCard = popupAddCard.querySelector('.popup__form');
@@ -41,31 +37,23 @@ const inputPlace = formAddCard.querySelector('.popup__input_type_card-name');
 const inputLink = formAddCard.querySelector('.popup__input_type_url');
 //константы валидации//
 const configValid = {
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inactiveButtonClass: 'popup__button_off',
-  inputErrorClass: 'form__input_err',
-  errorClass: 'form__input-error_active'
+	formSelector: '.popup__form',
+	inputSelector: '.popup__input',
+	submitButtonSelector: '.popup__button',
+	inactiveButtonClass: 'popup__button_off',
+	inputErrorClass: 'form__input_err',
+	errorClass: 'form__input-error_active'
 };
-let cardsList;
 export let userId;
 //константы карточек//
 
-Promise.all([
-	request(`users/me`, 'GET'),
-	request(`cards`, 'GET')
-])
+Promise.all([getUserInfo(), getCards()])
 	.then(([userData, cardsData]) => {
 		console.log('Информация о пользователе', userData);
 		userName.textContent = userData.name;
 		userJob.textContent = userData.about;
-		inputName.value = userData.name;
-		inputJob.value = userData.about;
-		cardsList = cardsData;
 		userId = userData._id;
 		userPhoto.style.backgroundImage = `url(${userData.avatar})`;
-
 		cardsData.forEach(function (userCard) {
 			const card = createCard(userCard, templateCard, deleteCard, likeCard, function() {
 				zoomImage(userCard);
@@ -75,9 +63,7 @@ Promise.all([
 		console.log('Карточки', cardsData);
 	})
 	.catch(() => {
-		console.log('Ошибка подключения к серверу, загружено в Off-line режиме');
-		userPhoto.style.backgroundImage = "url('../../../images/avatar.jpg')";
-		addCards ();
+		console.error('Ошибка подключения к серверу, загружено в Off-line режиме');
 	});
 
 //функция создания набора карточек на странице
@@ -104,7 +90,6 @@ function addNewCard(evt) {
 				likes: data.likes,
 				owner: data.owner
 		}
-		cardsList.unshift(newCard);
 		const newUserCard = createCard(newCard, templateCard, deleteCard, likeCard, function() {
 			zoomImage(newCard);
 		}, userId);
@@ -112,13 +97,13 @@ function addNewCard(evt) {
 		evt.target.reset();
 		closePopup(popupAddCard);
 	})
+	.catch((err) => {
+		console.error("Ошибка при выполнении запроса:", err);
+	})
 	.finally(() =>{
 		evt.submitter.textContent = 'Сохранить';
 	});
-	
 }
-//Константы фуллскрин//
-
 
 function zoomImage({name, link}) {
 	popupTitle.textContent = name;
@@ -126,8 +111,6 @@ function zoomImage({name, link}) {
 	popupImg.alt = `Полюбуемся ${name}`;
 	showPopup(imgPopup);
 }
-
-
 
 function handleFormUserName(evt) {
 	evt.preventDefault();
@@ -142,7 +125,7 @@ function handleFormUserName(evt) {
 				.catch((err) => {
 					console.error('При изменении информации возникла ошибка:', err);
 				})
-				.finally(() =>{
+				.finally(() => {
 					evt.submitter.textContent = 'Сохранить';
 				});
 }
@@ -160,14 +143,10 @@ function handleFormPhoto(evt) {
 		.catch((err) => {
 			console.error('При изменении информации возникла ошибка:', err);
 		})
-		.finally(() =>{
+		.finally(() => {
 			evt.submitter.textContent = 'Сохранить';
 		});
 }
-
-
-//добавляем слушатель клика, для изменения контактов//
-editButton.addEventListener('click', () => showPopup(profileEditPopup));
 
 //Кнопка добавления карточки//
 const buttonAddCard = document.querySelector('.profile__add-button');
@@ -176,45 +155,31 @@ buttonAddCard.addEventListener('click', function() {
 	showPopup(popupAddCard);
 }
 );
-//закрытие по клику формы профиля //
-
-
-profileEditPopup.addEventListener('click', (evt) => {
-	if (isClosedPopup(evt)) {
-		closePopup(profileEditPopup);
-	}
-});
-
-//изменение UserData
-userForm.addEventListener('submit', handleFormUserName); 
-
 
 userPhoto.addEventListener('click', function() {
 	showPopup(profilePhotoPopup);
 });
 
-profilePhotoPopup.addEventListener('click', (evt) => {
-	if (isClosedPopup(evt)) {
-		closePopup(profilePhotoPopup);
-	}
+//изменение UserData
+editButton.addEventListener('click', () => {
+	inputName.value = userName.textContent;
+	inputJob.value = userJob.textContent;
+	showPopup(profileEditPopup);
+});
+userForm.addEventListener('submit', handleFormUserName); 
+
+popups.forEach((popup) => {
+		popup.addEventListener('mousedown', (evt) => {
+				if (evt.target.classList.contains('popup_is-opened')) {
+						closePopup(popup);
+				}
+				if (evt.target.classList.contains('popup__close')) {
+					closePopup(popup);
+				}
+		});
 });
 
 photoForm.addEventListener('submit', handleFormPhoto);
-
-//закрытие по клику формы//
-popupAddCard.addEventListener('click', (evt) => {
-	if (isClosedPopup(evt)) {
-		closePopup(popupAddCard);
-	}
-});
-
-imgPopup.addEventListener('click', (evt) => {
-	if (isClosedPopup(evt)) {
-		closePopup(imgPopup);
-	}
-});
-
 //создание карточки по введенным данным//
 popupAddCard.addEventListener('submit', addNewCard); 
 enableValidation(configValid);
-

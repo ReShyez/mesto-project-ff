@@ -6,7 +6,6 @@ function closePopupByEsc (evt) {
     if(openPopup){
       closePopup(openPopup);
     }
-    ;
   }
 }
 export function showPopup(evt) {
