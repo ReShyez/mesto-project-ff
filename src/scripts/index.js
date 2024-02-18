@@ -1,6 +1,5 @@
 //Переменная контейнера//
 import "../pages/index.css";
-import {initialCards} from './components/cards.js';
 import {createCard, deleteCard} from './components/card.js';
 import {
 	getUserInfo,
@@ -44,7 +43,7 @@ const configValid = {
 	inputErrorClass: 'form__input_err',
 	errorClass: 'form__input-error_active'
 };
-export let userId;
+let userId;
 //константы карточек//
 
 Promise.all([getUserInfo(), getCards()])
@@ -65,16 +64,6 @@ Promise.all([getUserInfo(), getCards()])
 	.catch(() => {
 		console.error('Ошибка подключения к серверу, загружено в Off-line режиме');
 	});
-
-//функция создания набора карточек на странице
-function addCards () {
-	initialCards.forEach(function (userCard) {
-			const card = createCard(userCard, templateCard, deleteCard, likeCard, function() {
-				zoomImage(userCard);
-			});
-			placeList.append(card);
-	});
-}
 
 function addNewCard(evt) {
 	evt.preventDefault();
